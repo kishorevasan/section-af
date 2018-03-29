@@ -9,12 +9,13 @@ library(ggplot2)
 library(waffle)
 library(wordcloud)
 library(tm)
+library(plyr)
 
 
 t <- read.csv("Section AF - Survey.csv")
 View(t)
-
-t <- t[,2:7]
+colnames(t)
+t <- t[,5:10]
 colnames(t)<- c("gender","school","infostatus","rexp","gitexp","datascience")
 
 #comnination of gender and infostatus
@@ -22,19 +23,21 @@ t1 <- t[,c("gender","infostatus")]
 t1 <- as.data.frame(table(t1))
 
 #combination of gender, infostatus and year of school
-library(plyr)
 t2 <- t[,c("gender","infostatus","school")]
 t2 <- as.data.frame(count(t2))
 
 #r exp 
 t3 <- as.data.frame(table(t$rexp))
 t3<- t3%>% mutate(Group = factor(Var1),cumulative = cumsum(Freq),midpoint = cumulative - Freq/2,label = round(Freq/sum(Freq),2))
+colnames(t3) <- c("rExp","Freq","Group","Cumulative","Midpoint","Label")
 
 #git exp
 t4 <- as.data.frame(table(t$gitexp))
 t5<- t4$Freq
 names(t5) <- t4$Var1
 
+
+#VISUALIZATIONSS!
 
 #stacked bar plot
 ggplot(data = t)+
@@ -50,15 +53,15 @@ ggplot(data = t2,aes(gender,freq))+
   facet_grid(school ~.)
 
 #pie chart
-ggplot(t3,aes(x = factor(1),y = Freq,fill= Var1))+
+ggplot(t3,aes(x = factor(1),y = Freq,fill= rExp))+
   geom_bar(width = 1, stat = "identity")+
   coord_polar("y",start = 0)
 
 #pie chart with percentage values
-ggplot(t3, aes(x = 1, weight = Freq, fill = Var1)) +
+ggplot(t3, aes(x = 1, weight = Freq, fill = rExp)) +
   geom_bar(width = 1, position = "stack") +
   coord_polar(theta = "y") +
-  geom_text(aes(x = 1.3, y = midpoint, label = label),size = 5) 
+  geom_text(aes(x = 1.3, y = Midpoint, label = Label),size = 5) 
 
 
 #waffle chart
