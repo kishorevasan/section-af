@@ -11,12 +11,14 @@ library(wordcloud)
 library(tm)
 library(plyr)
 
-
+#LOADING DATA
 t <- read.csv("Section AF - Survey.csv")
 View(t)
 colnames(t)
 t <- t[,5:10]
 colnames(t)<- c("gender","school","infostatus","rexp","gitexp","datascience")
+
+#ORGANIZING DATA
 
 #comnination of gender and infostatus
 t1 <- t[,c("gender","infostatus")]
